@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: linear-gradient(135deg,#1e1e2f,#3a3a6e);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            width: 420px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: #00c3ff;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>User Registration</h2>
+
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <input id="role" placeholder="Role">
+
+    <button onclick="register()">Register</button>
+
+    <h3>Users</h3>
+    <button onclick="loadUsers()">Refresh</button>
+
+    <table id="table"></table>
+</div>
+
+<script>
+function register() {
+    fetch("/register", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            email: email.value,
+            password: password.value,
+            role: role.value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        loadUsers();
+    });
+}
+
+function loadUsers() {
+    fetch("/users")
+    .then(res => res.json())
+    .then(data => {
+        let html = "<tr><th>Email</th><th>Role</th><th>Created</th></tr>";
+        data.data.forEach(u => {
+            html += `<tr>
+                <td>${u.email}</td>
+                <td>${u.role}</td>
+                <td>${u.created_at}</td>
+            </tr>`;
+        });
+        table.innerHTML = html;
+    });
+}
+
+loadUsers();
+</script>
+
+</body>
+</html>
